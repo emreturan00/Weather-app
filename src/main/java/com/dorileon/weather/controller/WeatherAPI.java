@@ -15,7 +15,7 @@ public class WeatherAPI {
 
     private WeatherService weatherService;
 
-    public void WeatherAPI(WeatherService weatherService) {
+    public WeatherAPI(WeatherService weatherService) {
         this.weatherService = weatherService;
     }
 
