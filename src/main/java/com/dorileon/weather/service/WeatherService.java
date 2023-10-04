@@ -7,6 +7,7 @@ import com.dorileon.weather.model.WeatherEntity;
 import com.dorileon.weather.repository.WeatherRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -35,10 +36,13 @@ public class WeatherService {
         Optional<WeatherEntity> weatherEntityOptional = weatherRepository.
                 findFirstByRequestedCityNameOrderByUpdatedTimeDesc(city);
 
-        if(!weatherEntityOptional.isPresent()) {
+        return weatherEntityOptional.map(weather -> {
+            if (weather.getUpdatedTime().isBefore(LocalDateTime.now().minusMinutes(30))){
                 return WeatherDto.convert(getWeatherFromWeatherStack(city));
-        }
-        return WeatherDto.convert(weatherEntityOptional.get());
+            }
+            return WeatherDto.convert(weather);
+
+        }).orElseGet(() -> WeatherDto.convert(getWeatherFromWeatherStack(city)));
     }
 
     private WeatherEntity getWeatherFromWeatherStack(String city){
