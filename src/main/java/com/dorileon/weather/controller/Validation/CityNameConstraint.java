@@ -12,7 +12,7 @@ import static java.lang.annotation.ElementType.PARAMETER;
 
 
 @Documented
-@Constraint(validatedBy = { })
+@Constraint(validatedBy = {CityNameValidator.class})
 @Target({ METHOD, FIELD, PARAMETER})
 @Retention(RUNTIME)
 public @interface CityNameConstraint {
