@@ -6,3 +6,12 @@ spring:
   h2:
     console:
       enabled: true
+
+
+resilience4j:
+  ratelimiter:
+    instances:
+      myLimit:
+        limit-for-period: 10
+        limit-refresh-period: 1m
+        timeout-duration: 10s
