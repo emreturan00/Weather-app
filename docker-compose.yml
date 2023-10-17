@@ -5,5 +5,42 @@ services:
     image: 'weather:latest'
     build:
       context: .
+    deploy:
+      mode: replicated
+      replicas: 3
     ports:
-      - "9595:8080"
+      - "9595-9597:8080"
+    networks:
+      - weather-network
+
+  prometheus:
+    image: prom/prometheus:v2.35.0
+    container_name: prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./data/prometheus/config:/etc/prometheus/
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - weather-network
+  grafana:
+    container_name: grafana
+    pull_policy: always
+    image: grafana/grafana-oss
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SERVER_DOMAIN=localhost
+    volumes:
+      - ./data/grafana:/var/lib/grafana
+    links:
+      - prometheus
+    networks:
+      - weather-network
+
+networks:
+  weather-network:
